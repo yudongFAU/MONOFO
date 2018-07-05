@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     ROS_WARN("Remapping 'camera' has no effect! Start image_proc in the "
              "camera namespace instead.\nExample command-line usage:\n"
              "\t$ ROS_NAMESPACE=%s rosrun image_proc image_proc",
-             ros::names::remap("camera").c_str());
+             ros::names::remap("camera/rgb").c_str());
   }
   if (ros::this_node::getNamespace() == "/")
   {
@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 
   // Check for only the original camera topics
   ros::V_string topics;
-  topics.push_back(ros::names::resolve("rgb/image_raw"));
-  topics.push_back(ros::names::resolve("rgb/camera_info"));
+  topics.push_back(ros::names::resolve("image_raw"));
+  topics.push_back(ros::names::resolve("camera_info"));
   image_proc::AdvertisementChecker check_inputs(ros::NodeHandle(), ros::this_node::getName());
   check_inputs.start(topics, 60.0);
   
