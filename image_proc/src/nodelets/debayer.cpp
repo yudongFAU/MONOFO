@@ -109,7 +109,7 @@ void DebayerNodelet::connectCb()
   else if (!sub_raw_)
   {
     image_transport::TransportHints hints("raw", ros::TransportHints(), getPrivateNodeHandle());
-    sub_raw_ = it_->subscribe("image_raw", 1, &DebayerNodelet::imageCb, this, hints);
+    sub_raw_ = it_->subscribe("rgb/image_raw", 1, &DebayerNodelet::imageCb, this, hints);
   }
 }
 
