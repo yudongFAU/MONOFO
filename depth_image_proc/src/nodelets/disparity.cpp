@@ -52,8 +52,8 @@ namespace enc = sensor_msgs::image_encodings;
 
 class DisparityNodelet : public nodelet::Nodelet
 {
-  boost::shared_ptr<image_transport::ImageTransport> left_it_;
-  ros::NodeHandlePtr right_nh_;
+  boost::shared_ptr<image_transport::ImageTransport> ir_it_;
+  ros::NodeHandlePtr ir2_nh_;
   image_transport::SubscriberFilter sub_depth_image_;
   message_filters::Subscriber<sensor_msgs::CameraInfo> sub_info_;
   typedef message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::CameraInfo> Sync;
@@ -81,9 +81,9 @@ void DisparityNodelet::onInit()
 {
   ros::NodeHandle &nh         = getNodeHandle();
   ros::NodeHandle &private_nh = getPrivateNodeHandle();
-  ros::NodeHandle left_nh(nh, "left");
-  left_it_.reset(new image_transport::ImageTransport(left_nh));
-  right_nh_.reset( new ros::NodeHandle(nh, "right") );
+  ros::NodeHandle ir_nh(nh, "ir");
+  ir_it_.reset(new image_transport::ImageTransport(ir_nh));
+  ir2_nh_.reset( new ros::NodeHandle(nh, "ir2") );
 
   // Read parameters
   int queue_size;
@@ -100,7 +100,7 @@ void DisparityNodelet::onInit()
   ros::SubscriberStatusCallback connect_cb = boost::bind(&DisparityNodelet::connectCb, this);
   // Make sure we don't enter connectCb() between advertising and assigning to pub_disparity_
   boost::lock_guard<boost::mutex> lock(connect_mutex_);
-  pub_disparity_ = left_nh.advertise<stereo_msgs::DisparityImage>("disparity", 1, connect_cb, connect_cb);
+  pub_disparity_ = ir_nh.advertise<stereo_msgs::DisparityImage>("disparity", 1, connect_cb, connect_cb);
 }
 
 // Handles (un)subscribing when clients (un)subscribe
@@ -115,8 +115,8 @@ void DisparityNodelet::connectCb()
   else if (!sub_depth_image_.getSubscriber())
   {
     image_transport::TransportHints hints("raw", ros::TransportHints(), getPrivateNodeHandle());
-    sub_depth_image_.subscribe(*left_it_, "image_rect", 1, hints);
-    sub_info_.subscribe(*right_nh_, "camera_info", 1);
+    sub_depth_image_.subscribe(*ir_it_, "image_rect", 1, hints);
+    sub_info_.subscribe(*ir2_nh_, "camera_info", 1);
   }
 }
 

@@ -2,7 +2,7 @@
 * Software License Agreement (BSD License)
 * 
 *  Copyright (c) 2008, Willow Garage, Inc.
-*  All rights reserved.
+*  All Rights reserved.
 * 
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
@@ -43,7 +43,7 @@ void loadMonocularNodelets(nodelet::Loader& manager, const std::string& side,
   nodelet::M_string remappings;
 
   // Explicitly resolve global remappings (wg-ros-pkg #5055).
-  // Otherwise the internal remapping 'image_raw' -> 'left/image_raw' can hide a
+  // Otherwise the internal remapping 'image_raw' -> 'ir/image_raw' can hide a
   // global remapping from the launch file or command line.
   std::string image_raw_topic        = ros::names::resolve(side + "/image_raw");
   std::string image_mono_topic       = ros::names::resolve(side + "/image_mono");
@@ -110,9 +110,9 @@ int main(int argc, char **argv)
   nodelet::M_string remappings;
   nodelet::V_string my_argv;
 
-  // Load equivalents of image_proc for left and right cameras
-  loadMonocularNodelets(manager, "left",  shared_params, my_argv);
-  loadMonocularNodelets(manager, "right", shared_params, my_argv);
+  // Load equivalents of image_proc for ir and ir2 cameras
+  loadMonocularNodelets(manager, "ir",  shared_params, my_argv);
+  loadMonocularNodelets(manager, "ir2", shared_params, my_argv);
 
   // Stereo nodelets also need to know the synchronization policy
   bool approx_sync;
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     shared_params["approximate_sync"] = XmlRpc::XmlRpcValue(approx_sync);
 
   // Disparity nodelet
-  // Inputs: left/image_rect, left/camera_info, right/image_rect, right/camera_info
+  // Inputs: ir/image_rect, ir/camera_info, ir2/image_rect, ir2/camera_info
   // Outputs: disparity
   // NOTE: Using node name for the disparity nodelet because it is the only one using
   // dynamic_reconfigure so far, and this makes us backwards-compatible with cturtle.
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
   manager.load(disparity_name, "stereo_image_proc/disparity", remappings, my_argv);
 
   // PointCloud2 nodelet
-  // Inputs: left/image_rect_color, left/camera_info, right/camera_info, disparity
+  // Inputs: ir/image_rect_color, ir/camera_info, ir2/camera_info, disparity
   // Outputs: points2
   std::string point_cloud2_name = ros::this_node::getName() + "_point_cloud2";
   if (shared_params.valid())
@@ -137,10 +137,10 @@ int main(int argc, char **argv)
 
   // Check for only the original camera topics
   ros::V_string topics;
-  topics.push_back(ros::names::resolve("left/image_raw"));
-  topics.push_back(ros::names::resolve("left/camera_info"));
-  topics.push_back(ros::names::resolve("right/image_raw"));
-  topics.push_back(ros::names::resolve("right/camera_info"));
+  topics.push_back(ros::names::resolve("ir/image_raw"));
+  topics.push_back(ros::names::resolve("ir/camera_info"));
+  topics.push_back(ros::names::resolve("ir2/image_raw"));
+  topics.push_back(ros::names::resolve("ir2/camera_info"));
   image_proc::AdvertisementChecker check_inputs(ros::NodeHandle(), ros::this_node::getName());
   check_inputs.start(topics, 60.0);
 

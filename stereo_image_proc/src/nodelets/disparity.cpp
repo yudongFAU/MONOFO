@@ -158,12 +158,12 @@ void DisparityNodelet::connectCb()
   {
     ros::NodeHandle &nh = getNodeHandle();
     // Queue size 1 should be OK; the one that matters is the synchronizer queue size.
-    /// @todo Allow remapping left, right?
+    /// @todo Allow remapping ir, ir2?
     image_transport::TransportHints hints("raw", ros::TransportHints(), getPrivateNodeHandle());
-    sub_l_image_.subscribe(*it_, "left/image_rect", 1, hints);
-    sub_l_info_ .subscribe(nh,   "left/camera_info", 1);
-    sub_r_image_.subscribe(*it_, "right/image_rect", 1, hints);
-    sub_r_info_ .subscribe(nh,   "right/camera_info", 1);
+    sub_l_image_.subscribe(*it_, "ir/image_rect", 1, hints);
+    sub_l_info_ .subscribe(nh,   "ir/camera_info", 1);
+    sub_r_image_.subscribe(*it_, "ir2/image_rect", 1, hints);
+    sub_r_info_ .subscribe(nh,   "ir2/camera_info", 1);
   }
 }
 
@@ -182,14 +182,14 @@ void DisparityNodelet::imageCb(const ImageConstPtr& l_image_msg,
 
   // Compute window of (potentially) valid disparities
   int border   = block_matcher_.getCorrelationWindowSize() / 2;
-  int left   = block_matcher_.getDisparityRange() + block_matcher_.getMinDisparity() + border - 1;
+  int ir   = block_matcher_.getDisparityRange() + block_matcher_.getMinDisparity() + border - 1;
   int wtf = (block_matcher_.getMinDisparity() >= 0) ? border + block_matcher_.getMinDisparity() : std::max(border, -block_matcher_.getMinDisparity());
-  int right  = disp_msg->image.width - 1 - wtf;
+  int ir2  = disp_msg->image.width - 1 - wtf;
   int top    = border;
   int bottom = disp_msg->image.height - 1 - border;
-  disp_msg->valid_window.x_offset = left;
+  disp_msg->valid_window.x_offset = ir;
   disp_msg->valid_window.y_offset = top;
-  disp_msg->valid_window.width    = right - left;
+  disp_msg->valid_window.width    = ir2 - ir;
   disp_msg->valid_window.height   = bottom - top;
 
   // Create cv::Mat views onto all buffers

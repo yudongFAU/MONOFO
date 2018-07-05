@@ -3,23 +3,23 @@
 
   <arg name="manager" /> <!-- Must be globally qualified -->
   <arg name="respawn" default="false" />
-  <arg name="left" default="left" />
-  <arg name="right" default="right" />
+  <arg name="ir" default="ir" />
+  <arg name="ir2" default="ir2" />
   <!-- TODO Arguments for sync policy, etc? -->
 
   <arg     if="$(arg respawn)" name="bond" value="" />
   <arg unless="$(arg respawn)" name="bond" value="--no-bond" />
 
-  <!-- Basic processing for left camera -->
+  <!-- Basic processing for ir camera -->
   <include file="$(find image_proc)/launch/image_proc.launch"
-	   ns="$(arg left)">
+           ns="$(arg ir)">
     <arg name="manager" value="$(arg manager)" />
     <arg name="respawn" value="$(arg respawn)" />
   </include>
 
-  <!-- Basic processing for right camera -->
+  <!-- Basic processing for ir2 camera -->
   <include file="$(find image_proc)/launch/image_proc.launch"
-	   ns="$(arg right)">
+           ns="$(arg ir2)">
     <arg name="manager" value="$(arg manager)" />
     <arg name="respawn" value="$(arg respawn)" />
   </include>
