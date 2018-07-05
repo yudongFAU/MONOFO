@@ -15,7 +15,7 @@ protected:
     ros::NodeHandle local_nh("~");
 
     // Determine topic names
-    std::string camera_ns = nh.resolveName("camera") + "/";
+    std::string camera_ns = nh.resolveName("camera/rgb") + "/";
     if (camera_ns == "/camera")
       throw "Must remap 'camera' to the camera namespace.";
     topic_raw        = camera_ns + "image_raw";
