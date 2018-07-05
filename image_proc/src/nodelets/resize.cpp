@@ -79,7 +79,7 @@ void ResizeNodelet::onInit()
   ReconfigureServer::CallbackType f = boost::bind(&ResizeNodelet::configCb, this, _1, _2);
   reconfigure_server_->setCallback(f);
 
-  pub_info_ = advertise<sensor_msgs::CameraInfo>(*pnh_, "camera_info", 1);
+  pub_info_ = advertise<sensor_msgs::CameraInfo>(*pnh_, "rgb/camera_info", 1);
   pub_image_ = advertise<sensor_msgs::Image>(*pnh_, "image", 1);
 
   onInitPostProcess();
@@ -92,7 +92,7 @@ void ResizeNodelet::configCb(Config &config, uint32_t level)
 
 void ResizeNodelet::subscribe()
 {
-  sub_info_ = nh_->subscribe("camera_info", 1, &ResizeNodelet::infoCb, this);
+  sub_info_ = nh_->subscribe("rgb/camera_info", 1, &ResizeNodelet::infoCb, this);
   sub_image_ = nh_->subscribe("image", 1, &ResizeNodelet::imageCb, this);
 }
 
